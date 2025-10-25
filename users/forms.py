@@ -1,7 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
-
 from .models import User
 
 
@@ -12,7 +11,7 @@ class CustomUserCreationForm(UserCreationForm):
         """Мета-класс для настройки формы"""
 
         model = User
-        fields = ["username", "email", "phone", "avatar", "country", "password1", "password2"]
+        fields = ["username", "email", "phone", "avatar", "password1", "password2"]
         widgets = {
             "avatar": forms.ClearableFileInput(
                 attrs={
@@ -32,10 +31,9 @@ class CustomUserCreationForm(UserCreationForm):
             {
                 "class": "form-control",
                 "accept": "image/jpeg, image/png, .jpg, .jpeg, .png",  # только изображения в формате jpeg, png
-                "placeholder": "Загрузите изображение в формате jpeg, png, jpg",
+                "placeholder": "Загрузите изображение в формате jpeg, png, jpg (максимум 5 МБ)",
             }
         )
-        self.fields["country"].widget.attrs.update({"class": "form-control", "placeholder": "Введите страну"})
         self.fields["password1"].widget.attrs.update({"class": "form-control", "placeholder": "Введите пароль"})
         self.fields["password2"].widget.attrs.update(
             {"class": "form-control", "placeholder": "Введите пароль повторно"}
@@ -89,12 +87,11 @@ class UserProfileForm(forms.ModelForm):
         """Мета-класс для настройки формы"""
 
         model = User
-        fields = ["username", "email", "phone", "avatar", "country"]
+        fields = ["username", "email", "phone", "avatar"]
         widgets = {
             "username": forms.TextInput(attrs={"class": "form-control", "placeholder": "Введите имя пользователя"}),
             "email": forms.EmailInput(attrs={"class": "form-control", "placeholder": "Введите email"}),
             "phone": forms.TextInput(attrs={"class": "form-control", "placeholder": "+79999999999"}),
-            "country": forms.TextInput(attrs={"class": "form-control", "placeholder": "Введите страну"}),
             "avatar": forms.ClearableFileInput(
                 attrs={"class": "form-control", "accept": "image/jpeg, image/png, .jpg, .jpeg, .png"}
             ),

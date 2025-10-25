@@ -13,7 +13,9 @@ urlpatterns = [
     path(
         "email-confirm/<str:token>/", email_verification, name="email-confirm"
     ),  # Подтверждение email адреса по токену
-    path("logout/", LogoutView.as_view(next_page="service_mailing:home"), name="logout"),  # Выход из учетной записи
-    path("profile/", UserProfileView.as_view(), name="profile"),  # Профиль пользователя
-    path("profile/edit/", UserProfileUpdateView.as_view(), name="profile_edit"),  # Редактирование профиля
+    path(
+        "logout/", LogoutView.as_view(next_page="my_note:home"), name="logout"
+    ),  # Выход из учетной записи с возвратом на главную
+    path("profile/", UserProfileView.as_view(), name="profile"),  # Показать профиль пользователя
+    path("profile/edit/", UserProfileUpdateView.as_view(), name="profile_edit"),  # Редактирование профиля пользователя
 ]
