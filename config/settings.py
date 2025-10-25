@@ -1,0 +1,158 @@
+import os
+import sys
+
+from dotenv import load_dotenv
+from pathlib import Path
+
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Загрузка переменных окружения из файла .env
+load_dotenv(override=True)
+
+# Quick-start development settings - unsuitable for production
+# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.getenv("SECRET_KEY")  # Ключ Django для подписи сессий
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = True if os.getenv("DEBUG") == "True" else False
+
+ALLOWED_HOSTS = ["*"]
+
+# Application definition
+
+INSTALLED_APPS = [
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "users",
+    "my_note",
+
+]
+
+MIDDLEWARE = [
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+]
+
+ROOT_URLCONF = "config.urls"
+
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+            ],
+        },
+    },
+]
+
+WSGI_APPLICATION = "config.wsgi.application"
+
+# Database
+# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": os.getenv("POSTGRES_DB"),
+        "USER": os.getenv("POSTGRES_USER", default="postgres"),
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
+        "HOST": os.getenv("POSTGRES_HOST", default="localhost"),
+        "PORT": os.getenv("POSTGRES_PORT", default="5432"),
+    }
+}
+
+# Password validation
+# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
+
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+    },
+]
+
+
+# Internationalization
+# https://docs.djangoproject.com/en/5.2/topics/i18n/
+
+LANGUAGE_CODE = "en-us"
+
+TIME_ZONE = "Europe/Moscow"  # Настройка временной зоны
+
+USE_I18N = True  # Включает поддержку интернационализации.
+
+USE_L10N = True  # Включает поддержку локализации, применяя форматирование даты и времени.
+
+USE_TZ = True  # Включение поддержки временных зон
+
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/5.2/howto/static-files/
+
+STATIC_URL = "/static/"  # Маршрут к папке со статическими файлами
+STATICFILES_DIRS = (BASE_DIR / "static",)  # Список папок на диске, из которых будут подгружаться статические файлы
+STATIC_ROOT = BASE_DIR / "static"  # Путь к папке на сервере, куда будут сохраняться статические файлы
+
+MEDIA_URL = "/media/"  # Путь к папке с медиафайлами
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")  # Путь к папке на диске с медиафайлами, загружаемыми пользователем
+
+# Default primary key field type
+# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
+
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"  # По умолчанию используется BigAutoField для первичных ключей
+
+# Авторизация в приложении users (для использования собственного класса пользователя)
+AUTH_USER_MODEL = "users.User"  # Для аутентификации используется собственный класс User
+LOGIN_REDIRECT_URL = 'my_note:home'  # После успешной авторизации перенаправление на главную страницу приложения
+LOGOUT_REDIRECT_URL = 'my_note:home'  # После выхода из аккаунта перенаправление на главную страницу приложения
+LOGIN_URL = 'users:login'  # Путь к странице логина для перенаправления неавторизованных пользователей при попытке
+                           # перехода на защищенные страницы
+
+# Настройка отправки почты через сервер Яндекса
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.yandex.ru'
+EMAIL_PORT = 465
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = True
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')  # Адрес электронной почты для отправки почты
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')  # Пароль от сервиса яндекса для отправки почты
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER  # По умолчанию отправляем письма с этого адреса
+
+# Настройка отправки сообщений в Telegram
+# TELEGRAM_URL = "https://api.telegram.org/bot"  # URL для отправки сообщений в Telegram
+# TG_BOT_TOKEN = os.getenv("TG_BOT_TOKEN")  # Токен бота Telegram
+
+# Динамически настраивает базу данных для тестов в Django проекте
+# Проверяет, присутствует ли 'test' в аргументах командной строки. Используется SQLite вместо основной БД
+if 'test' in sys.argv:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',  # Используется SQLite вместо основной БД
+            'NAME': BASE_DIR / 'db.sqlite3',         # Файл БД SQLite в корне проекта
+        }
+    }
