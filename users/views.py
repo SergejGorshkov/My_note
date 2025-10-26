@@ -42,7 +42,7 @@ class RegisterView(CreateView):
 
 
 def email_verification(request, token):
-    """Проверка токена для подтверждения email"""
+    """Проверка токена для подтверждения email и активация аккаунта"""
     user = get_object_or_404(User, token=token)  # Получение пользователя из БД по временному токену
     user.is_active = True  # Активация аккаунта
     user.save()

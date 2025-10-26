@@ -1,4 +1,6 @@
-{% extends 'service_mailing/base.html' %}
+{% extends 'my_note/base.html' %}
+{% load crispy_forms_tags %}
+
 {% block title %}Редактирование профиля{% endblock %}
 
 {% block content %}
@@ -58,12 +60,7 @@
                                     {% endif %}
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label">Страна</label>
-                                    {{ form.country }}
-                                </div>
-                            </div>
+
                         </div>
                         
                         <div class="mb-3">
@@ -99,4 +96,4 @@
         </div>
     </div>
 </div>
-{% endblock %}
+{% endblock content %}
