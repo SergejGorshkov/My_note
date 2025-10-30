@@ -1,7 +1,6 @@
 {% extends 'my_note/base.html' %}
-{% load crispy_forms_tags %}
 
-{% block title %}Профиль пользователя{% endblock %}
+{% block title %}Профиль{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
@@ -39,22 +38,6 @@
                             <div class="mb-3">
                                 <strong>Телефон:</strong>
                                 <p class="mb-0">{{ user.phone|default:"Не указан" }}</p>
-                            </div>
-                            <div class="mb-3">
-                                <strong>Аватар:</strong>
-                                <div class="mt-2">
-                                    {% if user.avatar %}
-                                        <img src="{{ user.avatar.url }}"
-                                             alt="Аватар пользователя"
-                                             class="img-thumbnail"
-                                             style="max-width: 150px;">
-                                    {% else %}
-                                        <div class="text-muted">
-                                            <i class="fas fa-user-circle fa-3x"></i>
-                                            <p class="mt-2">Аватар не указан</p>
-                                        </div>
-                                    {% endif %}
-                                </div>
                             </div>
                         </div>
                     </div>

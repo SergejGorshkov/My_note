@@ -1,0 +1,54 @@
+{% extends 'my_note/base.html' %}
+
+{% block title %}Главная - My Note{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="jumbotron bg-light p-5 rounded">
+            <h1 class="display-4">Добро пожаловать в My Note!</h1>
+            <p class="lead">Это ваше личное пространство для ведения дневника и записи мыслей.</p>
+            <hr class="my-4">
+            <p>Создавайте, редактируйте и храните свои заметки в безопасном и удобном месте.</p>
+            <p>hglfghlsfhglshlfl</p>
+            {% if not user.is_authenticated %}
+            <div class="mt-4">
+                <a class="btn btn-primary btn-lg" href="{% url 'users:register' %}" role="button">Начать сейчас</a>
+                <a class="btn btn-outline-secondary btn-lg" href="{% url 'users:login' %}" role="button">Войти</a>
+            </div>
+            {% else %}
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Статистика</h5>
+                            <p class="card-text">Всего заметок: {{ total_notes }}</p>
+                            <a href="{% url 'my_note:note_create' %}" class="btn btn-primary">Создать новую заметку</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Последние заметки</h5>
+                            {% if recent_notes %}
+                                <ul class="list-group list-group-flush">
+                                    {% for note in recent_notes %}
+                                    <li class="list-group-item">
+                                        <a href="{% url 'my_note:note_detail' note.pk %}">{{ note.title }}</a>
+                                        <small class="text-muted">{{ note.created_at|date:"d.m.Y" }}</small>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p class="text-muted">У вас пока нет заметок</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

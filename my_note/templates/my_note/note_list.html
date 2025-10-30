@@ -1,0 +1,99 @@
+{% extends 'my_note/base.html' %}
+
+{% block title %}Мои заметки{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Мои заметки</h1>
+    <a href="{% url 'my_note:note_create' %}" class="btn btn-primary">Новая заметка</a>
+</div>
+
+<!-- Форма поиска -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-8">
+                {{ search_form.query }}  <!-- Поле для ввода поискового запроса -->
+            </div>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-outline-primary w-100">Поиск</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Список заметок -->
+{% if notes %}
+    <div class="row">
+        {% for note in notes %}
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 {% if note.is_important %}border-warning{% endif %}">
+                <!-- Блок с фотографиями -->
+                {% if note.images.exists %}
+                <div class="note-images-container" style="height: 150px; overflow: hidden; background-color: #f8f9fa;">
+                    <div class="d-flex h-100 align-items-center justify-content-center">
+                        {% for image in note.images.all|slice:":2" %}
+                        <div class="h-100 {% if note.images.count > 1 %}me-2{% endif %}">
+                            <img src="{{ image.image.url }}"
+                                 class="h-100"
+                                 alt="{{ note.title }}"
+                                 style="max-width: 100%; width: auto; object-fit: contain;">
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">
+                        {{ note.title }}
+                        {% if note.is_important %}
+                        <span class="badge bg-warning text-dark">Важная заметка</span>
+                        {% endif %}
+                    </h5>
+                    <p class="card-text flex-grow-1">{{ note.content|truncatewords:30 }}</p>
+                    <div class="mt-auto">
+                        <small class="text-muted">Создано: {{ note.created_at|date:"d.m.Y H:i" }}</small>
+                        <div class="mt-2">
+                            <a href="{% url 'my_note:note_detail' note.pk %}" class="btn btn-sm btn-outline-primary">Просмотр</a>
+                            <a href="{% url 'my_note:note_delete' note.pk %}" class="btn btn-sm btn-outline-danger">Удалить</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Пагинация -->
+    {% if is_paginated %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.query %}&query={{ request.GET.query }}{% endif %}">Назад</a>
+            </li>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+            <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                <a class="page-link" href="?page={{ num }}{% if request.GET.query %}&query={{ request.GET.query }}{% endif %}">{{ num }}</a>
+            </li>
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.query %}&query={{ request.GET.query }}{% endif %}">Вперед</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+{% else %}
+    <div class="text-center py-5">
+        <h3>Заметок не найдено</h3>
+        <p class="text-muted">{% if request.GET.query %}Попробуйте изменить поисковый запрос{% else %}Создайте свою первую заметку!{% endif %}</p>
+        <a href="{% url 'my_note:note_create' %}" class="btn btn-primary">Создать заметку</a>
+    </div>
+{% endif %}
+{% endblock %}

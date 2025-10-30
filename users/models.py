@@ -15,7 +15,7 @@ class User(AbstractUser):
         max_length=254
     )
     phone = models.CharField(
-        max_length=15,
+        max_length=12,
         blank=True,
         null=True,
         verbose_name="Номер телефона",
@@ -56,4 +56,4 @@ class User(AbstractUser):
         ]
 
     def __str__(self):
-        return f"self.username - self.email"
+        return f"{self.username} - {self.email}"

@@ -11,14 +11,8 @@ class Note(models.Model):
         verbose_name='Заголовок заметки'
     )
     content = models.TextField(
-        verbose_name='Содержание',
+        verbose_name='Содержание заметки',
     )
-    image = models.ImageField(
-        upload_to='my_note/photo',
-        blank=True,
-        null=True,
-        verbose_name='Изображение',
-        )
     is_important = models.BooleanField(
         default=False,
         verbose_name='Важная заметка',
@@ -45,11 +39,41 @@ class Note(models.Model):
         ordering = ["-is_important", "-created_at"]  # сортировка по важности и по дате создания (сначала новые записи)
         verbose_name = 'Запись'
         verbose_name_plural = 'Записи'
-        indexes = ["title", "content"]  # поиск по полям
+        # индексы для поиска по заголовку и содержанию
+        indexes = [
+            models.Index(fields=["title"]),
+            models.Index(fields=["content"]),
+        ]
 
     def __str__(self):
-        return f"self.title - self.created_at"
+        return f"{self.title} - {self.created_at}"
 
     def get_absolute_url(self):
         """Возвращает абсолютный URL для детальной страницы заметки"""
         return reverse('note_detail', kwargs={'pk': self.pk})
+
+
+class NoteImage(models.Model):
+    """Модель для хранения фотографий к заметке"""
+    note = models.ForeignKey(
+        Note,
+        on_delete=models.CASCADE,
+        related_name='images',
+        verbose_name='Заметка',
+    )
+    image = models.ImageField(
+        upload_to='my_note/photo',
+        verbose_name='Изображение'
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Дата добавления изображения',
+    )
+
+    class Meta:
+        ordering = ['created_at']  # сортировка по дате добавления
+        verbose_name = 'Изображение к заметке'
+        verbose_name_plural = 'Изображения к заметкам'
+
+    def __str__(self):
+        return f"Изображение для {self.note.title}"
