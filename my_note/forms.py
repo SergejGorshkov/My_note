@@ -1,6 +1,5 @@
 from django import forms
 from my_note.models import Note, NoteImage
-# from django.core.exceptions import ValidationError
 
 
 class NoteImageForm(forms.ModelForm):

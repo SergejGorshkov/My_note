@@ -6,7 +6,6 @@ from django.urls import reverse_lazy, reverse  # Генерация URL
 from django.views.generic import CreateView, UpdateView, DetailView  # CBV для создания объектов
 from django.contrib.auth.mixins import LoginRequiredMixin  # Проверка авторизации
 from django.contrib.messages.views import SuccessMessageMixin  # Показ сообщений о действиях в формах
-from django.contrib import messages
 from config.settings import EMAIL_HOST_USER  # Получение email отправителя из settings.py
 from users.forms import CustomUserCreationForm, UserUpdateForm  # Импорт формы регистрации
 from users.models import User  # Импорт модели пользователя

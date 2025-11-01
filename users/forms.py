@@ -17,7 +17,7 @@ class CustomUserCreationForm(UserCreationForm):
         fields = ["username", "email", "password1", "password2"]
 
     def __init__(self, *args, **kwargs):
-        super(self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.fields["username"].widget.attrs.update({"class": "form-control", "placeholder": "Имя пользователя"})
         self.fields["email"].widget.attrs.update({"class": "form-control", "placeholder": "Адрес электронной почты"})
@@ -25,9 +25,6 @@ class CustomUserCreationForm(UserCreationForm):
         self.fields["password2"].widget.attrs.update(
             {"class": "form-control", "placeholder": "Введите пароль повторно"}
         )
-
-        # Делаем email readonly, так как он используется для входа
-        self.fields["email"].widget.attrs["readonly"] = True
 
     def clean_email(self):
         """Валидация email на уникальность"""
