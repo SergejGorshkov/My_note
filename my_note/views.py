@@ -42,19 +42,20 @@ class NoteListView(LoginRequiredMixin, ListView):
         # Поиск по запросу в БД
         search_form = NoteSearchForm(self.request.GET)  # Создаем форму из GET-запроса
         # Если форма валидна и есть запрос в форме...
-        if search_form.is_valid() and search_form.cleaned_data['query']:
-            query = search_form.cleaned_data['query']
-            queryset = queryset.filter(
-                Q(title__icontains=query) | Q(content__icontains=query)
-            )
-
+        if search_form.is_valid():
+            query = search_form.cleaned_data.get('query')
+            if query:
+                queryset = queryset.filter(
+                    Q(title__icontains=query) | Q(content__icontains=query)
+                )
         return queryset
 
     def get_context_data(self, **kwargs):
         """ Добавление формы поиска в контекст """
         # Получение контекста родительского класса
         context = super().get_context_data(**kwargs)
-        context['search_form'] = NoteSearchForm(self.request.GET)
+        search_form = NoteSearchForm(self.request.GET)
+        context['search_form'] = search_form
         return context
 
 

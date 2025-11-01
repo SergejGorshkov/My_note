@@ -1,8 +1,10 @@
 import os
 import sys
+from celery.schedules import crontab
 
 from dotenv import load_dotenv
 from pathlib import Path
+
 
 # Указывает на корневую папку проекта
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -43,6 +45,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django.middleware.locale.LocaleMiddleware",  # Для автоматического определения зоны пользователя
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -100,7 +103,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = 'ru-ru'  # Автоматическое форматирование даты и времени в русском формате (ДД.ММ.ГГГГ ЧЧ:ММ)
 
 TIME_ZONE = "Europe/Moscow"  # Настройка временной зоны
 
@@ -133,6 +136,31 @@ LOGOUT_REDIRECT_URL = 'my_note:home'  # После выхода из аккау�
 LOGIN_URL = 'users:login'  # Путь к странице логина для перенаправления неавторизованных пользователей при попытке
                            # перехода на защищенные страницы
 
+# Настройки для Celery
+
+# URL-адрес брокера сообщений
+CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")  # Например, Redis, который по умолчанию работает на порту 6379
+# URL-адрес брокера результатов, также Redis
+CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND")
+# Часовой пояс для работы Celery
+CELERY_TIMEZONE = TIME_ZONE  # временная зона (совпадает с временной зоной в Django)
+# Флаг отслеживания выполнения задач
+CELERY_TASK_TRACK_STARTED = True
+# Максимальное время на выполнение задачи
+CELERY_TASK_TIME_LIMIT = 10 * 60  # 10 минут
+
+# Настройка расписания выполнения задач для Celery
+CELERY_BEAT_SCHEDULE = {
+    "send-note-reminders": {
+        "task": "users.tasks.send_reminder_message",  # Путь к задаче
+        "schedule": crontab(hour=20, minute=0),  # Выполняется каждый день в 20:00
+    },
+}
+
+
+TELEGRAM_URL = "https://api.telegram.org/bot"  # URL для отправки сообщений в Telegram
+TG_BOT_TOKEN = os.getenv("TG_BOT_TOKEN")  # Токен бота Telegram
+
 # Redis cache
 CACHES = {
     'default': {
@@ -154,9 +182,8 @@ EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')  # Адрес электронн�
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')  # Пароль от сервиса яндекса для отправки почты
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER  # По умолчанию отправляем письма с этого адреса
 
-# Настройка отправки сообщений в Telegram
-# TELEGRAM_URL = "https://api.telegram.org/bot"  # URL для отправки сообщений в Telegram
-# TG_BOT_TOKEN = os.getenv("TG_BOT_TOKEN")  # Токен бота Telegram
+# Для тестирования (использует консоль вместо реальной отправки)
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Динамически настраивает базу данных для тестов в Django проекте
 # Проверяет, присутствует ли 'test' в аргументах командной строки. Используется SQLite вместо основной БД

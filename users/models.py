@@ -14,6 +14,13 @@ class User(AbstractUser):
         help_text="Введите email",
         max_length=254
     )
+    tg_chat_id = models.CharField(
+        max_length=50,
+        blank=True,
+        null=True,
+        verbose_name="ID чата в Telegram",
+        help_text="Введите ID чата в Telegram"
+    )
     phone = models.CharField(
         max_length=12,
         blank=True,
@@ -29,7 +36,7 @@ class User(AbstractUser):
 ############################################################################################
     # Поле для ежедневного напоминания о заполнении дневника
     is_recalled_daily = models.BooleanField(
-        default=True,
+        default=False,
         verbose_name='Ежедневное напоминание',
         help_text='Отметьте для ежедневного напоминания о заполнении дневника'
     )
@@ -49,11 +56,6 @@ class User(AbstractUser):
 
         verbose_name = "Пользователь"
         verbose_name_plural = "Пользователи"
-
-        permissions = [
-            ("can_view_user_list", "Может просматривать список пользователей"),
-            ("can_block_user", "Может блокировать пользователей"),
-        ]
 
     def __str__(self):
         return f"{self.username} - {self.email}"

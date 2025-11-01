@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
-from .models import User
+from users.models import User
 
 
 class CustomUserCreationForm(UserCreationForm):
@@ -44,16 +44,17 @@ class UserUpdateForm(forms.ModelForm):
     class Meta:
         """Мета-класс для настройки формы"""
         model = User
-        fields = ["username", "email", "phone", "avatar", "is_recalled_daily"]
+        fields = ["username", "email","tg_chat_id","phone", "avatar", "is_recalled_daily"]
         widgets = {
             "username": forms.TextInput(attrs={"class": "form-control", "placeholder": "Имя пользователя"}),
             "email": forms.EmailInput(attrs={"class": "form-control", "placeholder": "Адрес электронной почты"}),
+            "tg_chat_id": forms.TextInput(attrs={"class": "form-control", "placeholder": "ID чата в Telegram (для получения напоминаний)"}),
             "phone": forms.TextInput(attrs={"class": "form-control", "placeholder": "Номер телефона в формате: +79999999999"}),
             "avatar": forms.ClearableFileInput(
                 attrs={
                     "class": "form-control",
                     "accept": "image/jpeg, image/png, .jpg, .jpeg, .png",
-                    "placeholder": "Загрузите изображение в формате jpeg, png, jpg (максимум 5 МБ)",
+                    "placeholder": "Загрузите изображение в формате jpeg, png, jpg (максимум 10 МБ)",
                 }),
             "is_recalled_daily": forms.CheckboxInput(attrs={"class": "form-check-input", "placeholder": "Отметить для ежедневного напоминания о заполнении дневника"}),
         }
@@ -71,9 +72,9 @@ class UserUpdateForm(forms.ModelForm):
             return None
 
         # Проверка размера файла (максимум 5 МБ)
-        max_size = 5 * 1024 * 1024
+        max_size = 10 * 1024 * 1024
         if avatar.size > max_size:
-            raise forms.ValidationError("Размер файла слишком большой. Максимальный размер: 5 МБ")
+            raise forms.ValidationError("Размер файла слишком большой. Максимальный размер: 10 МБ")
 
         # Проверка формата файла
         valid_extensions = ["jpg", "jpeg", "png"]

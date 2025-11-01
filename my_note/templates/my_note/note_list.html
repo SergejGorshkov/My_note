@@ -13,7 +13,15 @@
     <div class="card-body">
         <form method="get" class="row g-3">
             <div class="col-md-8">
-                {{ search_form.query }}  <!-- Поле для ввода поискового запроса -->
+                {{ search_form.query }}
+                <!-- Отображение ошибок валидации -->
+                {% if search_form.query.errors %}
+                <div class="alert alert-danger mt-2">
+                    {% for error in search_form.query.errors %}
+                        <small>{{ error }}</small>
+                    {% endfor %}
+                </div>
+                {% endif %}
             </div>
             <div class="col-md-4">
                 <button type="submit" class="btn btn-outline-primary w-100">Поиск</button>

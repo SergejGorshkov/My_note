@@ -1,5 +1,6 @@
 from django import forms
 from my_note.models import Note, NoteImage
+from django.core.exceptions import ValidationError
 
 
 class NoteImageForm(forms.ModelForm):
@@ -39,6 +40,7 @@ class NoteForm(forms.ModelForm):
             'content': 'Содержание заметки',
             'is_important': 'Отметить заметку как важную',
         }
+
 
     def clean(self):
         """Проверка размера файлов"""
@@ -85,7 +87,7 @@ class NoteSearchForm(forms.Form):
         widget=forms.TextInput(attrs={
             'class': 'form-control',
             'placeholder': 'Поиск по заголовку или содержанию...'
-        })
+        }),
     )
 
     def clean_query(self):
@@ -97,18 +99,6 @@ class NoteSearchForm(forms.Form):
             return query
 
         query = query.strip()  # Удаление пробелов в начале и конце строки запроса
-
-        # Проверка минимальной длины
-        if len(query) < 2:
-            raise forms.ValidationError(
-                "Запрос должен содержать минимум 2 символа"
-            )
-
-        # Проверка максимальной длины строки запроса
-        if len(query) > 100:
-            raise forms.ValidationError(
-                "Запрос не должен превышать 100 символов"
-            )
 
         # Удаление опасных символов для исключения SQL-инъекций
         dangerous_chars = ['\'', '"', ';', '--', '/*', '*/', '<script>', '</script>']
