@@ -39,6 +39,14 @@
                                 <strong>Телефон:</strong>
                                 <p class="mb-0">{{ user.phone|default:"Не указан" }}</p>
                             </div>
+                            <div class="mb-3">
+                                <strong>ID в Telegram:</strong>
+                                <p class="mb-0">{{ user.tg_chat_id|default:"Не указан" }}</p>
+                            </div>
+                            <div class="mb-3">
+                                <strong>Ежедневное напоминание в Telegram:</strong>
+                                    <p class="mb-0">{{ user.is_recalled_daily|yesno:"Да,Нет" }}</p>
+                            </div>
                         </div>
                     </div>
                 </div>

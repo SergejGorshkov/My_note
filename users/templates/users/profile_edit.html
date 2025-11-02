@@ -59,9 +59,24 @@
                                     {% endif %}
                                 </div>
                             </div>
-
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">ID Telegram</label>
+                                    {{ form.tg_chat_id }}
+                                    {% if form.tg_chat_id.errors %}
+                                    <div class="text-danger">
+                                        {% for error in form.tg_chat_id.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
                         </div>
-                        
+                        <div class="mb-3">
+                            <label class="form-label">Ежедневное напоминание в Telegram</label>
+                            {{ form.is_recalled_daily }}
+                        </div>
                         <div class="mb-3">
                             <label class="form-label">Аватар</label>
                             {{ form.avatar }}
