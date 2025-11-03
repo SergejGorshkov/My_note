@@ -153,12 +153,12 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 
+# Настройки для django-celery-beat
 # Настройка расписания выполнения задач для Celery
 CELERY_BEAT_SCHEDULE = {
     "send-note-reminders": {
         "task": "users.tasks.send_reminder_message",  # Путь к задаче
-        "schedule": crontab(hour=20, minute=00),  # Выполняется каждый день в 20:00
-        # 'schedule': crontab(minute='*/1'),  # Каждые 1 минут - для тестирования
+        "schedule": crontab(hour=20, minute=0),  # Выполняется каждый день в 20:00 (по Москве)
     },
 }
 

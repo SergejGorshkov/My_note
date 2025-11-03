@@ -12,12 +12,11 @@ def send_reminder_message():
     users_to_remind = User.objects.filter(is_recalled_daily=True, tg_chat_id__isnull=False)
 
     if not users_to_remind:
-        print('Нет пользователей, которым нужно отправить напоминание')  # Для логирования
         return
 
     # Отправляем напоминание каждому пользователю
     for user in users_to_remind:
-        message = (f'Привет от "My note"! '
+        message = (f'Привет, {user.username}, от "My note"! '
                    f'День подходит к концу, не забудь записать самые важные моменты в свой дневник!'
                    f' http://127.0.0.1:8000/')
-        send_telegram_message(user.tg_chat_id, message)
+        send_telegram_message.delay(user.tg_chat_id, message)  # Отправляем сообщение в Телеграм в асинхронном режиме

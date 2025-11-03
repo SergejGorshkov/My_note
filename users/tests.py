@@ -1,8 +1,6 @@
-from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, Client
 from django.urls import reverse
 from django.core import mail
-from django.conf import settings
 
 from users.models import User
 from users.forms import CustomUserCreationForm, UserUpdateForm
