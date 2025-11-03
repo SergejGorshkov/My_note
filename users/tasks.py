@@ -19,4 +19,4 @@ def send_reminder_message():
         message = (f'Привет, {user.username}, от "My note"! '
                    f'День подходит к концу, не забудь записать самые важные моменты в свой дневник!'
                    f' http://127.0.0.1:8000/')
-        send_telegram_message.delay(user.tg_chat_id, message)  # Отправляем сообщение в Телеграм в асинхронном режиме
+        send_telegram_message(user.tg_chat_id, message)  # Отправляем сообщение в Телеграм в асинхронном режиме

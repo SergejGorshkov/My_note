@@ -1,5 +1,7 @@
 from django.contrib import admin
+
 from my_note.models import Note
+
 
 @admin.register(Note)
 class NoteAdmin(admin.ModelAdmin):

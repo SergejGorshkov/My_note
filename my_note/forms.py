@@ -1,6 +1,6 @@
 from django import forms
+
 from my_note.models import Note, NoteImage
-from django.core.exceptions import ValidationError
 
 
 class NoteImageForm(forms.ModelForm):
@@ -11,6 +11,7 @@ class NoteImageForm(forms.ModelForm):
         widgets = {
             'image': forms.FileInput(attrs={'class': 'form-control'}),
         }
+
 
 class NoteForm(forms.ModelForm):
     """Форма для создания и редактирования записей"""
@@ -26,21 +27,19 @@ class NoteForm(forms.ModelForm):
         label='Изображение 2'
     )
 
-
     class Meta:
         model = Note
         fields = ['title', 'content', 'is_important']  # поля, которые будут отображаться в форме
         widgets = {
-            'title': forms.TextInput(attrs={'class': 'form-control',}),
-            'content': forms.Textarea(attrs={'class': 'form-control', 'rows': 10,}),
-            'is_important': forms.CheckboxInput(attrs={"class": "form-check-input",}),
+            'title': forms.TextInput(attrs={'class': 'form-control', }),
+            'content': forms.Textarea(attrs={'class': 'form-control', 'rows': 10, }),
+            'is_important': forms.CheckboxInput(attrs={"class": "form-check-input", }),
         }
         labels = {
             'title': 'Заголовок заметки',
             'content': 'Содержание заметки',
             'is_important': 'Отметить заметку как важную',
         }
-
 
     def clean(self):
         """Проверка размера файлов"""

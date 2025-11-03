@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
+
 from users.models import User
 
 
@@ -8,7 +9,6 @@ class CustomUserCreationForm(UserCreationForm):
     """Форма для создания пользователя"""
     email = forms.EmailField(required=True)  # email обязателен для заполнения
     username = forms.CharField(required=True, max_length=150)  # username обязателен для заполнения
-
 
     class Meta:
         """Мета-класс для настройки формы"""
@@ -44,19 +44,25 @@ class UserUpdateForm(forms.ModelForm):
     class Meta:
         """Мета-класс для настройки формы"""
         model = User
-        fields = ["username", "email","tg_chat_id","phone", "avatar", "is_recalled_daily"]
+        fields = ["username", "email", "tg_chat_id", "phone", "avatar", "is_recalled_daily"]
         widgets = {
             "username": forms.TextInput(attrs={"class": "form-control", "placeholder": "Имя пользователя"}),
             "email": forms.EmailInput(attrs={"class": "form-control", "placeholder": "Адрес электронной почты"}),
-            "tg_chat_id": forms.TextInput(attrs={"class": "form-control", "placeholder": "ID чата в Telegram (для получения напоминаний)"}),
-            "phone": forms.TextInput(attrs={"class": "form-control", "placeholder": "Номер телефона в формате: +79999999999"}),
+            "tg_chat_id": forms.TextInput(attrs={
+                "class": "form-control", "placeholder": "ID чата в Telegram (для получения напоминаний)"}),
+            "phone": forms.TextInput(attrs={
+                "class": "form-control", "placeholder": "Номер телефона в формате: +79999999999"}),
             "avatar": forms.ClearableFileInput(
                 attrs={
                     "class": "form-control",
                     "accept": "image/jpeg, image/png, .jpg, .jpeg, .png",
                     "placeholder": "Загрузите изображение в формате jpeg, png, jpg (максимум 10 МБ)",
                 }),
-            "is_recalled_daily": forms.CheckboxInput(attrs={"class": "form-check-input", "placeholder": "Отметить для ежедневного напоминания о заполнении дневника"}),
+            "is_recalled_daily": forms.CheckboxInput(
+                attrs={
+                    "class": "form-check-input",
+                    "placeholder": "Отметить для ежедневного напоминания о заполнении дневника"
+                }),
         }
 
     def __init__(self, *args, **kwargs):

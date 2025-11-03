@@ -1,12 +1,10 @@
-from users.models import User
-
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import TestCase, Client
+from django.test import Client, TestCase
 from django.urls import reverse
-from django.core.exceptions import ValidationError
 
+from my_note.forms import NoteForm
 from my_note.models import Note, NoteImage
-from my_note.forms import NoteForm, NoteSearchForm, NoteImageForm
+from users.models import User
 
 
 class NoteModelTest(TestCase):

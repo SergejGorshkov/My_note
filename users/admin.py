@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+
 from .models import User
 
 
@@ -14,4 +15,3 @@ class CustomUserAdmin(UserAdmin):
             'fields': ('phone', 'avatar', 'is_recalled_daily', 'token', 'tg_chat_id')
         }),
     )
-    

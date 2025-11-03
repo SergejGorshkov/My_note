@@ -1,12 +1,11 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
-
 from django.db.models import Q  # Библиотека для поиска по запросу в БД
-
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from my_note.models import Note
-from my_note.forms import NoteForm, NoteSearchForm
 from django.urls import reverse_lazy
+from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
+
+from my_note.forms import NoteForm, NoteSearchForm
+from my_note.models import Note
 
 
 class HomeView(ListView):

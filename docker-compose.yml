@@ -1,0 +1,152 @@
+name: my_note
+services:
+  db:
+    container_name: db
+    image: postgres:16.0
+    # Параметры подключения к БД
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}  # Имя БД (из .env)
+      - POSTGRES_USER=${POSTGRES_USER}  # Имя пользователя (из .env)
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}  # Пароль пользователя (из .env)
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    healthcheck:
+      test: pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}
+      timeout: 10s
+      interval: 10s
+      retries: 5
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+##################################################################################################################
+  redis:
+    container_name: redis
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"  # Перенаправление порта 6379 контейнера на стандартный порт 6379 на хосте (если локальный порт уже занят, поменять на "6380:6379")
+
+    # Проверка здоровья сервиса redis
+    healthcheck:
+      test: redis-cli ping  # Проверка подключения к Redis с помощью ping команды
+      interval: 1s
+      timeout: 1s
+      retries: 5
+      start_period: 5s # Задержка перед первой проверкой
+    volumes:
+      - redis_data:/data
+##################################################################################################################
+  web:
+    container_name: web
+    build: .
+    command: >
+      bash -c "
+      python manage.py migrate &&
+      python manage.py collectstatic -c --no-input &&
+      python manage.py runserver 0.0.0.0:8000
+      "
+    env_file: .env
+    environment:
+      POSTGRES_HOST: db
+      REDIS_URL: "redis://redis:6379"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "8080:8000"
+    volumes:
+      - django_static:/app/static/
+      - django_media:/app/media/
+    working_dir: /app
+##################################################################################################################
+  nginx:
+    image: nginx:1.19.3
+    ports:
+      - "80:80"
+    depends_on:
+      web:
+        condition: service_started
+    # Монтирование томов для хранения данных и статики в Nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - django_static:/usr/share/nginx/html/static/
+      - django_media:/usr/share/nginx/html/media/
+##################################################################################################################
+  # Сервис Celery worker для выполнения фоновых задач
+
+  celery:
+    build: .  # Используем тот же образ, что и для веб-сервиса
+    command: celery -A config worker --loglevel=info  # Команда запуска Celery worker
+    # Загрузка остальных переменных окружения из файла .env
+    env_file:
+      - ./.env
+    # Зависимости от других сервисов
+    depends_on:
+      db:
+        condition: service_healthy  # Ждать пока БД не станет здоровой
+      redis:
+        condition: service_healthy  # Ждать пока Redis не станет здоровым
+      web:
+        condition: service_started  # Ждать запуска веб-сервиса
+    # Переменные окружения для подключения к БД
+    environment:
+      - POSTGRES_HOST=db           # Имя сервиса как хост
+      - POSTGRES_PORT=${POSTGRES_PORT}  # Порт БД из .env
+      - CELERY_RESULT_BACKEND=redis://redis:6379
+      - CELERY_BROKER_URL=redis://redis:6379
+    # Проверка здоровья сервиса celery
+    healthcheck:
+      test: [ "CMD", "celery", "-A", "config", "inspect", "ping" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    working_dir: /app
+##################################################################################################################
+  # Сервис Celery beat для планирования периодических задач
+  celery-beat:
+    build: .  # Используем тот же образ, что и для веб-сервиса
+    # Команда запуска Celery beat (планировщик) с предварительным запуском миграций
+    command: >
+      bash -c "
+      celery -A config beat 
+             --loglevel=info 
+             --schedule=/app/celerybeat-schedule/celerybeat-schedule 
+             --pidfile=/app/celerybeat-schedule/celerybeat.pid
+      "
+    # Загрузка переменных окружения из файла .env
+    env_file:
+      - ./.env
+    # Зависимости от других сервисов
+    depends_on:
+      db:
+        condition: service_healthy  # Ждать пока БД не станет здоровой
+      redis:
+        condition: service_healthy  # Ждать пока Redis не станет здоровым
+#      web:
+#        condition: service_started  # Ждать запуска веб-сервиса
+    # Переменные окружения для подключения к БД
+    environment:
+      - POSTGRES_HOST=db           # Имя сервиса как хост
+      - POSTGRES_PORT=${POSTGRES_PORT}  # Порт БД из .env
+      - CELERY_RESULT_BACKEND=redis://redis:6379
+      - CELERY_BROKER_URL=redis://redis:6379
+    # Проверка здоровья сервиса celery-beat
+    healthcheck:
+#      test: [ "CMD-SHELL", "ps aux | grep celery | grep beat || exit 1" ]
+      test: [ "CMD-SHELL", "ps aux | grep -v grep | grep 'celery beat' || exit 1" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    volumes:
+      - celery_beat_data:/app/celerybeat-schedule
+    working_dir: /app
+#############################################################################
+
+
+volumes:
+   postgres_data:  # Том для хранения данных БД PostgreSQL
+   redis_data:  # Том для хранения данных Redis
+   django_static:  # Том для статики Django
+   django_media:  # Том для медиа-файлов Django
+   celery_beat_data:  # Том для хранения данных Celery Beat

@@ -1,9 +1,9 @@
-from django.test import TestCase, Client
-from django.urls import reverse
 from django.core import mail
+from django.test import Client, TestCase
+from django.urls import reverse
 
-from users.models import User
 from users.forms import CustomUserCreationForm, UserUpdateForm
+from users.models import User
 
 
 class UserModelTest(TestCase):

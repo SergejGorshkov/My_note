@@ -1,6 +1,7 @@
 from django.db import models
-from config import settings
 from django.urls import reverse
+
+from config import settings
 
 
 class Note(models.Model):
