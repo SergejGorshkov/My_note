@@ -165,6 +165,7 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": crontab(hour=20, minute=0),  # Выполняется каждый день в 20:00 (по Москве)
     },
 }
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 
 TELEGRAM_URL = "https://api.telegram.org/bot"  # URL для отправки сообщений в Telegram
 TG_BOT_TOKEN = os.getenv("TG_BOT_TOKEN")  # Токен бота Telegram

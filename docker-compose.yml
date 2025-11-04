@@ -52,6 +52,12 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "python", "manage.py", "check", "--database", "default" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     ports:
       - "8080:8000"
     volumes:
@@ -122,28 +128,18 @@ services:
         condition: service_healthy  # Ждать пока БД не станет здоровой
       redis:
         condition: service_healthy  # Ждать пока Redis не станет здоровым
-#      web:
-#        condition: service_started  # Ждать запуска веб-сервиса
+      web:
+        condition: service_healthy  # Ждать запуска веб-сервиса
     # Переменные окружения для подключения к БД
     environment:
       - POSTGRES_HOST=db           # Имя сервиса как хост
       - POSTGRES_PORT=${POSTGRES_PORT}  # Порт БД из .env
       - CELERY_RESULT_BACKEND=redis://redis:6379
       - CELERY_BROKER_URL=redis://redis:6379
-    # Проверка здоровья сервиса celery-beat
-    healthcheck:
-#      test: [ "CMD-SHELL", "ps aux | grep celery | grep beat || exit 1" ]
-      test: [ "CMD-SHELL", "ps aux | grep -v grep | grep 'celery beat' || exit 1" ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
     volumes:
       - celery_beat_data:/app/celerybeat-schedule
     working_dir: /app
 #############################################################################
-
-
 volumes:
    postgres_data:  # Том для хранения данных БД PostgreSQL
    redis_data:  # Том для хранения данных Redis
