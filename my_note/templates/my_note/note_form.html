@@ -1,0 +1,21 @@
+{% extends 'my_note/base.html' %}
+
+{% block title %}{% if object %}Редактирование{% else %}Создание{% endif %} заметки{% endblock %}
+
+
+{% block page_title %}
+{% if object %}Редактирование{% else %}Создание{% endif %} заметки
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success">Сохранить</button>
+        <a href="{% if object %}{% url 'my_note:note_detail' object.pk %}{% else %}{% url 'my_note:note_list' %}{% endif %}"
+           class="btn btn-secondary">Отмена</a>
+    </form>
+</div>
+{% endblock content %}

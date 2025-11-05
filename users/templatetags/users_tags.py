@@ -11,5 +11,5 @@ register = template.Library()
 def media_filter(path):
     """Фильтр будет доступен в шаблонах под именем media_filter"""
     if path:
-        return f"/media/{path}" # Если передан путь, возвращает строку вида: "/media/ваш_файл.jpg"
+        return f"/media/{path}"  # Если передан путь, возвращает строку вида: "/media/ваш_файл.jpg"
     return "#"

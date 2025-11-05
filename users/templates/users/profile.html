@@ -1,5 +1,6 @@
-{% extends 'service_mailing/base.html' %}
-{% block title %}Профиль пользователя{% endblock %}
+{% extends 'my_note/base.html' %}
+
+{% block title %}Профиль{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
@@ -28,7 +29,7 @@
                         <div class="col-md-8">
                             <div class="mb-3">
                                 <strong>Имя пользователя:</strong>
-                                <p class="mb-0">{{ user.username|default:"Не указано" }}</p>
+                                <p class="mb-0">{{ user.username }}</p>
                             </div>
                             <div class="mb-3">
                                 <strong>Email:</strong>
@@ -39,8 +40,12 @@
                                 <p class="mb-0">{{ user.phone|default:"Не указан" }}</p>
                             </div>
                             <div class="mb-3">
-                                <strong>Страна:</strong>
-                                <p class="mb-0">{{ user.country|default:"Не указана" }}</p>
+                                <strong>ID в Telegram:</strong>
+                                <p class="mb-0">{{ user.tg_chat_id|default:"Не указан" }}</p>
+                            </div>
+                            <div class="mb-3">
+                                <strong>Ежедневное напоминание в Telegram:</strong>
+                                    <p class="mb-0">{{ user.is_recalled_daily|yesno:"Да,Нет" }}</p>
                             </div>
                         </div>
                     </div>
@@ -49,4 +54,4 @@
         </div>
     </div>
 </div>
-{% endblock %}
+{% endblock content %}

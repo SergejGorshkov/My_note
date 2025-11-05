@@ -1,0 +1,25 @@
+{% extends "my_note/base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="mb-0">{{ title }}</h3>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <div class="form-group mt-4">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Сохранить
+                        </button>
+                        <a href="{% url 'my_note:note_list' %}" class="btn btn-secondary">Отмена</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

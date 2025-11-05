@@ -6,10 +6,7 @@ class User(AbstractUser):
     username = models.CharField(
         max_length=150,
         unique=False,  # Не уникальное поле
-        blank=True,  # Разрешаем пустое значение
-        null=True,  # Разрешаем NULL в базе
         verbose_name="Имя пользователя",
-        help_text="Необязательное поле",
     )
     email = models.EmailField(
         unique=True,
@@ -17,36 +14,48 @@ class User(AbstractUser):
         help_text="Введите email",
         max_length=254
     )
+    tg_chat_id = models.CharField(
+        max_length=50,
+        blank=True,
+        null=True,
+        verbose_name="ID чата в Telegram",
+        help_text="Введите ID чата в Telegram"
+    )
     phone = models.CharField(
-        max_length=15,
+        max_length=12,
         blank=True,
         null=True,
         verbose_name="Номер телефона",
-        help_text="Введите номер телефона в формате: +79999999999",
     )
     avatar = models.ImageField(
         upload_to="users/avatars/",
         blank=True,
         null=True,
         verbose_name="Аватар",
-        help_text="Загрузите изображение аватара",
     )
+############################################################################################
+    # Поле для ежедневного напоминания о заполнении дневника
+    is_recalled_daily = models.BooleanField(
+        default=False,
+        verbose_name='Ежедневное напоминание',
+        help_text='Отметьте для ежедневного напоминания о заполнении дневника'
+    )
+############################################################################################
     # Поле для хранения токена временного доступа (для регистрации пользователя)
-    token = models.CharField(max_length=100, blank=True, null=True, verbose_name="Токен подтверждения")
+    token = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True,
+        verbose_name="Токен подтверждения")
 
     USERNAME_FIELD = "email"  # Обязательное поле для авторизации по email
-    REQUIRED_FIELDS = ["username"]  # Обязательные поля для создания суперпользователя (кроме email)
+    REQUIRED_FIELDS = ["username"]  # Обязательные поля для создания суперпользователя (включая email)
 
     class Meta:
         """Метаданные модели"""
 
         verbose_name = "Пользователь"
         verbose_name_plural = "Пользователи"
-        permissions = [
-            ("can_view_user_list", "Может просматривать список пользователей"),
-            ("can_block_user", "Может блокировать пользователей"),
-            # ("can_view_user_stats", "Может просматривать статистику пользователей"),
-        ]
 
     def __str__(self):
-        return self.email
+        return f"{self.username} - {self.email}"

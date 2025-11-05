@@ -1,13 +1,14 @@
 import secrets  # Генерация криптографически безопасных случайных токенов
 
+from django.contrib.auth.mixins import LoginRequiredMixin  # Проверка авторизации
+from django.contrib.messages.views import SuccessMessageMixin  # Показ сообщений о действиях в формах
 from django.core.mail import send_mail  # Отправка email
 from django.shortcuts import get_object_or_404, redirect  # HTTP-редиректы
-from django.urls import reverse_lazy, reverse  # Генерация URL
-from django.views.generic import CreateView, UpdateView, DetailView  # CBV для создания объектов
-from django.contrib.auth.mixins import LoginRequiredMixin  # Проверка авторизации
-from django.contrib import messages
+from django.urls import reverse, reverse_lazy  # Генерация URL
+from django.views.generic import CreateView, DetailView, UpdateView  # CBV для создания объектов
+
 from config.settings import EMAIL_HOST_USER  # Получение email отправителя из settings.py
-from users.forms import CustomUserCreationForm, UserProfileForm  # Импорт формы регистрации
+from users.forms import CustomUserCreationForm, UserUpdateForm  # Импорт формы регистрации
 from users.models import User  # Импорт модели пользователя
 
 
@@ -17,7 +18,7 @@ class RegisterView(CreateView):
     model = User  # Модель для создания пользователя
     template_name = "users/register.html"  # Имя шаблона для регистрации
     form_class = CustomUserCreationForm  # Используемый класс формы для регистрации
-    success_url = reverse_lazy("my_note:home")  # После успешной регистрации перенаправляем на главную страницу
+    success_url = reverse_lazy("users:login")  # После успешной регистрации перенаправляем на страницу входа
 
     def form_valid(self, form):
         """Переопределение метода для отправки письма с подтверждением email"""
@@ -42,7 +43,7 @@ class RegisterView(CreateView):
 
 
 def email_verification(request, token):
-    """Проверка токена для подтверждения email"""
+    """Проверка токена для подтверждения email и активация аккаунта"""
     user = get_object_or_404(User, token=token)  # Получение пользователя из БД по временному токену
     user.is_active = True  # Активация аккаунта
     user.save()
@@ -61,19 +62,15 @@ class UserProfileView(LoginRequiredMixin, DetailView):
         return self.request.user
 
 
-class UserProfileUpdateView(LoginRequiredMixin, UpdateView):
+class UserProfileUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     """Редактирование профиля пользователя"""
 
     model = User
-    form_class = UserProfileForm
+    form_class = UserUpdateForm
     template_name = "users/profile_edit.html"
     success_url = reverse_lazy("users:profile")
+    success_message = "Профиль успешно обновлен!"
 
     def get_object(self):
         """Получение объекта пользователя для редактирования"""
         return self.request.user
-
-    def form_valid(self, form):
-        """Переопределение метода для успешной отправки формы"""
-        messages.success(self.request, "Профиль успешно обновлен!")
-        return super().form_valid(form)

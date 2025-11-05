@@ -1,25 +1,17 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
+
 from .models import User
 
 
 @admin.register(User)
-class UserAdmin(admin.ModelAdmin):
-    # Отображаемые поля
-    list_display = (
-        "id",
-        "email",
-        "phone",
-        "avatar",
-        "username",
-    )
-    # возможность фильтрации
-    list_filter = (
-        "id",
-        "username",
-    )
-    # возможность поиска по полям
-    search_fields = (
-        "username",
-        "email",
-        "phone",
+class CustomUserAdmin(UserAdmin):
+    list_display = ['email', 'username', 'tg_chat_id', 'phone', 'is_recalled_daily']
+    list_filter = ['username', 'is_recalled_daily', 'is_staff', 'is_active']
+    search_fields = ['email', 'username', 'phone', 'tg_chat_id']
+
+    fieldsets = UserAdmin.fieldsets + (
+        ('Дополнительная информация', {
+            'fields': ('phone', 'avatar', 'is_recalled_daily', 'token', 'tg_chat_id')
+        }),
     )
